@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Editing Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header section -->
+    <header class="bg-dark text-white text-center py-4">
+        <h1>Image Editing Hub</h1>
+        <p>Your go-to place for all your image editing needs.</p>
+    </header>
+
+    <!-- Main content container -->
+    <div class="container mt-4">
+        <!-- Introduction -->
+        <h2>Welcome to our Image Editing Hub!</h2>
+        <p>Whether you're a professional photographer or just looking to enhance your social media posts, our image editing tools have got you covered.</p>
+
+        <!-- Display uploaded image -->
+        <div class="d-flex justify-content-center mt-4">
+            <img src="{{images.images.url}}" alt="" class="img-fluid">
+        </div>
+
+        <!-- Upload form -->
+        <p>Upload your image and start exploring our editing features:</p>
+        <form action="{% url 'image_upload' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <!-- File input -->
+                <input class="form-control" type="file" name="image" accept="image/jpg, image/jpeg, image/png">
+                <!-- Upload button -->
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </div>
+        </form>
+
+        <!-- Edit image button and explanation -->
+        <div class="mt-3">
+            <a href="{%url 'image_edit' %}" class="btn btn-primary btn-sm d-inline-block">Edit Image</a>
+            <span class="ml-2">Click the button to edit your uploaded image.</span>
+        </div>
+        {% if error_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
+        {% endif %}
+        <!-- List of editing features -->
+        <ul class="mt-3">
+            <li>Adjust brightness, contrast, and saturation</li>
+            <li>Add filters and effects</li>
+            <li>Crop and resize</li>
+            <li>Add text and stickers</li>
+            <li>And much more!</li>
+        </ul>
+
+        <!-- Conclusion -->
+        <p>Get started now and turn your photos into stunning masterpieces!</p>
+    </div>
+    <!-- Bootstrap scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image Viewer</title>
+    <style>
+        /* Styling for the gradient overlay on the main image */
+        .gradient-overlay {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Styling for the main image */
+        .main-image {
+            display: block;
+            margin: 0 auto;
+            border: 5px solid black;
+            margin-bottom: 30px;
+            max-width: 400px;
+            height: auto;
+        }
+
+        /* Styling for the small images container */
+
+        .small-images {
+            display: flex;
+            justify-content: center;
+            /* overflow-x: scroll;*/
+            white-space: nowrap;
+            margin-left: 10px;
+            /* Adjust this margin */
+        }
+
+        /* Styling for individual small images */
+        .small-images img {
+            padding: 0;
+            height: 100px;
+            width: 100px;
+            margin: 0;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            /* Smooth transition on hover */
+        }
+
+        /* Styling for hovered small images */
+        .small-images img:hover {
+            opacity: 0.76;
+        }
+
+        /* Styling for selected small images */
+        .small-images img.selected {
+            border: 3px solid blue;
+        }
+
+        /* Styling for filter names */
+        .filter-name {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+    <script>
+        // Function to change the main image and update the selected image
+        function selectImage(event, i) {
+            document.getElementById('main-img').src = i;
+            // Deselect all previously selected images
+            var selectedImages = document.querySelectorAll('.small-images img.selected');
+            selectedImages.forEach(img => img.classList.remove('selected'));
+
+            // Select the clicked image
+            event.target.classList.add('selected');
+            console.log(selectedImages)
+
+        }
+        // Function to save the current main image
+        function saveImage() {
+            var image = document.getElementById('main-img');
+            var url = image.src;
+            var filename = 'image.png';
+
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+        }
+        // Attach click event listener to the save button
+
+        var button = document.getElementById('save-button');
+        button.addEventListener('click', saveImage);
+        // Attach click event listener to the save button
+
+        function deleteManipulatedImage() {
+            var imageId = '{{ manipulated_images.id }}'; // Get the ID of the manipulated image
+            // Make an AJAX request to delete the image
+            fetch(`/delete_manipulated_image/${imageId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Manipulated image deleted from admin.');
+                    } else {
+                        console.error('Failed to delete manipulated image.');
+                    }
+                })
+                .catch(error => {
+                    console.error('An error occurred while deleting manipulated image:', error);
+                });
+        }
+        // Call the deleteManipulatedImage function when leaving the page or using the back button
+        window.onbeforeunload = function () {
+            deleteManipulatedImage();
+        };
+        window.onpopstate = function (event) {
+            deleteManipulatedImage();
+        }
+       
+
+     
+
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.css">
+
+</head>
+
+<body class="bg-light">
+    <!-- Container for the introductory text -->
+    <div class="container mt-5" style="margin-bottom: 40px;">
+        <h1 class="display-4 text-center my-4 text-primary">Pixel Perfect: The Ultimate Image Editor</h1>
+        <p class="lead text-center text-primary">
+            Pixel Perfect is a powerful and easy-to-use image editor that lets you enhance and transform your photos
+            like never before. With a wide range of editing tools, filters, and effects.Pixel Perfect has everything you
+            need to take your images to the next
+            level.
+        </p>
+    </div>
+    <!-- Display error message if available -->
+
+    {% if error_message %}
+    <div class="alert alert-danger text-center" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    <!-- Main image container -->
+    <div class="main-image-container text-center">
+        <img class="main-image" id="main-img" src="{{manipulated_images.original_image.url}}"
+            alt="{{uploaded_image_path}}">
+    </div>
+    <!-- <div class="gradient-overlay"> -->
+    <!-- Small images container -->
+    <div class="small-images">
+        <!-- Display the manipulated images -->
+        <div class="d-flex justify-content-center mt-4">
+            <div class="image-container text-center">
+                <img src="{{manipulated_images.original_image.url}}" alt="Original Image" class="img-fluid"
+                    onclick="selectImage(event,'{{manipulated_images.original_image.url}}')">
+                <p class="filter-name">Original</p>
+            </div>
+            <div class="image-container text-center">
+                <img src="{{ manipulated_images.enhanced_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.enhanced_image.url }}')">
+                <p class="filter-name">Enhanced</p>
+            </div>
+            <div class="image-container text-center">
+                <img src="{{ manipulated_images.edge_detected_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.edge_detected_image.url }}')">
+                <p class="filter-name">Edge</p>
+            </div>
+            <div class="image-container text-center">
+                <img src="{{ manipulated_images.grayscale_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.grayscale_image.url }}')">
+                <p class="filter-name">Grayscale</p>
+            </div>
+            <div class="image-container text-center">
+                <img src="{{ manipulated_images.green_channel_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.green_channel_image.url }}')">
+                <p class="filter-name">Green Channel</p>
+            </div>
+
+            <div class="image-container text-center">
+
+                <img src="{{ manipulated_images.artistic_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.artistic_image.url }}')">
+                <p class="filter-name">Artistic</p>
+
+            </div>
+            <div class="image-container text-center">
+
+                <img src="{{ manipulated_images.colored_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.colored_image.url }}')">
+                <p class="filter-name">Colored</p>
+
+            </div>
+            <div class="image-container text-center">
+
+                <img src="{{ manipulated_images.sharpened_image.url }}" alt="Enhanced Image" class="img-fluid"
+                    onclick="selectImage(event,'{{ manipulated_images.sharpened_image.url }}')">
+                <p class="filter-name">Sharpened</p>
+            </div>
+
+        </div>
+    </div>
+    <!-- </div> -->
+    </div>
+    <!-- back button -->
+    <!-- Save button -->
+    <div class="d-flex justify-content-center mt-1">
+        <button type="button" class="btn btn-primary btn-lg" id="save-button" onclick="saveImage()">Save</button>
+        &nbsp; &nbsp;
+        <a href="{%url 'image_upload' %}"><button type="button" class="btn btn-primary btn-lg"
+                onclick="deleteManipulatedImage()">Back</button></a>
+
+    </div>
+</body>
+
+</html>
