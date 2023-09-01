@@ -1,0 +1,21 @@
+Django==3.2.6
+# Database driver (e.g., for PostgreSQL)
+psycopg2-binary==2.9.1
+# Web framework for API development
+djangorestframework==3.12.4
+# Python package for handling images
+Pillow==8.2.0
+# Python package for working with forms
+django-forms==1.2.0
+# Python package for authentication
+django-allauth==0.45.0
+# Package for working with environment variables
+python-decouple==3.5
+# Package for sending email
+django-email==1.0.0
+# Package for pagination
+django-pagination==1.0.0
+# Package for background tasks
+django-background-tasks==1.2.0
+
+
