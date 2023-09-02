@@ -17,5 +17,8 @@ django-email==1.0.0
 django-pagination==1.0.0
 # Package for background tasks
 django-background-tasks==1.2.0
+opencv-python-headless==4.5.3.56
+numpy==1.24.3
+
 
 
